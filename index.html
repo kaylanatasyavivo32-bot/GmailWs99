@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gmailws99 - Platform Layanan & Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- NAVBAR -->
+    <nav class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="navigate('home')">
+                    <div class="bg-blue-600 p-2 rounded-lg text-white font-bold text-xl"><i class="fa-solid fa-envelope-circle-check"></i></div>
+                    <span class="text-xl font-extrabold tracking-wider bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">Gmailws99</span>
+                </div>
+                <div id="nav-auth" class="flex items-center space-x-3">
+                    <!-- Dinamis via JS -->
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow">
+        
+        <!-- 1. HALAMAN UTAMA / LANDING -->
+        <div id="view-landing" class="space-y-12">
+            <div class="text-center py-16 bg-gradient-to-b from-slate-900 to-slate-950 rounded-3xl border border-slate-800 p-8 shadow-2xl">
+                <h1 class="text-4xl sm:text-5xl font-extrabold text-white mb-6">Solusi Penyimpanan & Layanan Email Profesional</h1>
+                <p class="text-slate-400 max-w-2xl mx-auto mb-8 text-lg">Kelola tugas pengiriman, simpan data aman, dan dapatkan penghasilan tambahan melalui platform terintegrasi kami.</p>
+                <div class="flex justify-center gap-4">
+                    <button onclick="switchAuthTab('register')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition duration-200">Daftar Sekarang</button>
+                    <button onclick="switchAuthTab('login')" class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-8 py-3 rounded-xl border border-slate-700 transition duration-200">Masuk Akun</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. HALAMAN AUTENTIKASI (LOGIN / REGISTER) -->
+        <div id="view-auth" class="hidden max-w-md mx-auto bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl">
+            <div class="flex border-b border-slate-800 mb-6">
+                <button id="tab-login" onclick="switchAuthTab('login')" class="flex-1 pb-3 text-center font-bold text-blue-500 border-b-2 border-blue-500 transition">Masuk</button>
+                <button id="tab-register" onclick="switchAuthTab('register')" class="flex-1 pb-3 text-center font-bold text-slate-400 border-b-2 border-transparent transition">Daftar</button>
+            </div>
+
+            <!-- Form Login -->
+            <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">Username / Email</label>
+                    <input type="text" id="login-user" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">Password</label>
+                    <input type="password" id="login-pass" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition">Masuk</button>
+            </form>
+
+            <!-- Form Register -->
+            <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">Username</label>
+                    <input type="text" id="reg-user" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">Email Utama</label>
+                    <input type="email" id="reg-email" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">Password</label>
+                    <input type="password" id="reg-pass" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500">
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-lg transition">Daftar Akun</button>
+            </form>
+        </div>
+
+        <!-- 3. HALAMAN MEMBER / DASHBOARD -->
+        <div id="view-member" class="hidden space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-400 text-sm">Selamat Datang,</p>
+                        <h2 id="member-name" class="text-xl font-bold text-white">-</h2>
+                    </div>
+                    <div class="bg-blue-600/20 text-blue-400 p-3 rounded-xl"><i class="fa-solid fa-user text-xl"></i></div>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-400 text-sm">Saldo Anda</p>
+                        <h2 id="member-balance" class="text-2xl font-extrabold text-emerald-400">Rp 0</h2>
+                    </div>
+                    <div class="bg-emerald-600/20 text-emerald-400 p-3 rounded-xl"><i class="fa-solid fa-wallet text-xl"></i></div>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-400 text-sm">Rate Per Email</p>
+                        <h2 id="member-rate" class="text-xl font-bold text-indigo-400">Rp 500</h2>
+                    </div>
+                    <div class="bg-indigo-600/20 text-indigo-400 p-3 rounded-xl"><i class="fa-solid fa-tag text-xl"></i></div>
+                </div>
+            </div>
+
+            <!-- Menu Tab Navigasi Member -->
+            <div class="flex flex-wrap gap-2 border-b border-slate-800 pb-3">
+                <button onclick="switchMemberTab('store')" id="m-tab-store" class="px-5 py-2.5 rounded-xl font-bold bg-blue-600 text-white transition">Kirim Email</button>
+                <button onclick="switchMemberTab('history')" id="m-tab-history" class="px-5 py-2.5 rounded-xl font-bold bg-slate-900 text-slate-400 hover:bg-slate-800 transition">Riwayat</button>
+                <button onclick="switchMemberTab('withdraw')" id="m-tab-withdraw" class="px-5 py-2.5 rounded-xl font-bold bg-slate-900 text-slate-400 hover:bg-slate-800 transition">Tarik Saldo (WD)</button>
+                <button onclick="switchMemberTab('rules')" id="m-tab-rules" class="px-5 py-2.5 rounded-xl font-bold bg-slate-900 text-slate-400 hover:bg-slate-800 transition">Aturan & Ketentuan</button>
+                <button onclick="switchMemberTab('profile')" id="m-tab-profile" class="px-5 py-2.5 rounded-xl font-bold bg-slate-900 text-slate-400 hover:bg-slate-800 transition">Profil</button>
+            </div>
+
+            <!-- Konten Tab Store -->
+            <div id="m-content-store" class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-6">
+                <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-paper-plane mr-2 text-blue-500"></i>Form Stor / Input Email</h3>
+                <form onsubmit="handleStoreEmail(event)" class="space-y-4 max-w-xl">
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-1">Alamat Email</label>
+                        <input type="email" id="store-email" required placeholder="contoh@gmail.com" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-1">Catatan / Keterangan (Opsional)</label>
+                        <input type="text" id="store-notes" placeholder="Catatan tambahan..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-3 rounded-lg transition">Kirim / Stor Email</button>
+                </form>
+            </div>
+
+            <!-- Konten Tab History -->
+            <div id="m-content-history" class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 hidden">
+                <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-clock-rotate-left mr-2 text-blue-500"></i>Riwayat Pengiriman & Penarikan</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-slate-950 text-slate-400 uppercase text-xs">
+                            <tr>
+                                <th class="p-3">Tanggal</th>
+                                <th class="p-3">Tipe</th>
+                                <th class="p-3">Keterangan / Detail</th>
+                                <th class="p-3">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="member-history-list" class="divide-y divide-slate-800"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Konten Tab Withdraw -->
+            <div id="m-content-withdraw" class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-6 hidden">
+                <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-money-bill-transfer mr-2 text-emerald-500"></i>Tarik Saldo (Withdraw)</h3>
+                <form onsubmit="handleWithdraw(event)" class="space-y-4 max-w-xl">
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-1">Jumlah Penarikan (Rp)</label>
+                        <input type="number" id="wd-amount" required placeholder="Minimal Rp 50.000" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-1">Metode Pembayaran (Bank / E-Wallet)</label>
+                        <input type="text" id="wd-method" required placeholder="DANA / BCA / OVO - No Rekening - Nama" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-3 rounded-lg transition">Ajukan Penarikan</button>
+                </form>
+            </div>
+
+            <!-- Konten Tab Rules -->
+            <div id="m-content-rules" class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 hidden">
+                <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-book mr-2 text-amber-500"></i>Aturan & Ketentuan Platform</h3>
+                <div id="display-rules" class="text-slate-300 space-y-2 text-sm leading-relaxed"></div>
+            </div>
+
+            <!-- Konten Tab Profile -->
+            <div id="m-content-profile" class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 hidden">
+                <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-id-card mr-2 text-indigo-500"></i>Profil Pengguna</h3>
+                <div class="space-y-2 text-slate-300">
+                    <p><strong>Username:</strong> <span id="prof-username">-</span></p>
+                    <p><strong>Email Utama:</strong> <span id="prof-email">-</span></p>
+                    <button onclick="handleLogout()" class="mt-4 bg-red-600 hover:bg-red-500 text-white font-bold px-5 py-2.5 rounded-lg transition">Keluar Akun</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. HALAMAN ADMIN PANEL ("frofit") -->
+        <div id="view-admin" class="hidden space-y-8">
+            <!-- Form Login Admin -->
+            <div id="admin-login-box" class="max-w-md mx-auto bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl mt-6">
+                <h2 class="text-2xl font-bold text-white mb-6 text-center"><i class="fa-solid fa-user-shield text-red-500 mr-2"></i>Login Frofit (Admin)</h2>
+                <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-1">Username Admin</label>
+                        <input type="text" id="admin-user-input" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500" placeholder="Masukkan username">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-1">Password Admin</label>
+                        <input type="password" id="admin-pass-input" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500" placeholder="Masukkan password">
+                    </div>
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded-lg transition">Masuk Frofit</button>
+                </form>
+            </div>
+
+            <!-- Panel Dashboard Admin (Setelah Login) -->
+            <div id="admin-panel-box" class="hidden space-y-6">
+                <div class="flex flex-wrap gap-3 border-b border-slate-800 pb-4">
+                    <button onclick="switchAdminTab('emails')" id="a-tab-emails" class="px-5 py-2.5 rounded-xl font-bold bg-red-600 text-white transition">ACC Email</button>
+                    <button onclick="switchAdminTab('wd')" id="a-tab-wd" class="px-5 py-2.5 rounded-xl font-bold bg-slate-900 text-slate-400 hover:bg-slate-800 transition">Proses WD</button>
+                    <button onclick="switchAdminTab('members')" id="a-tab-members" class="px-5 py-2.5 rounded-xl font-bold bg-slate-900 text-slate-400 hover:bg-slate-800 transition">Daftar Member</button>
+                    <button onclick="switchAdminTab('settings')" id="a-tab-settings" class="px-5 py-2.5 rounded-xl font-bold bg-slate-900 text-slate-400 hover:bg-slate-800 transition">Pengaturan & Rules</button>
+                </div>
+
+                <!-- Admin Tab: ACC Email -->
+                <div id="a-content-emails" class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
+                    <h3 class="text-lg font-bold text-white">Daftar Stor Email Pending</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-300">
+                            <thead class="bg-slate-950 text-slate-400 uppercase text-xs">
+                                <tr>
+                                    <th class="p-3">Tanggal</th>
+                                    <th class="p-3">Member</th>
+                                    <th class="p-3">Email</th>
+                                    <th class="p-3">Catatan</th>
+                                    <th class="p-3">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-email-list" class="divide-y divide-slate-800"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Admin Tab: Proses WD -->
+                <div id="a-content-wd" class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 hidden">
+                    <h3 class="text-lg font-bold text-white">Permintaan Penarikan Saldo (WD)</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-300">
+                            <thead class="bg-slate-950 text-slate-400 uppercase text-xs">
+                                <tr>
+                                    <th class="p-3">Tanggal</th>
+                                    <th class="p-3">Member</th>
+                                    <th class="p-3">Jumlah</th>
+                                    <th class="p-3">Metode / Rekening</th>
+                                    <th class="p-3">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-wd-list" class="divide-y divide-slate-800"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Admin Tab: Daftar Member -->
+                <div id="a-content-members" class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 hidden">
+                    <h3 class="text-lg font-bold text-white">Daftar Member Terdaftar</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-300">
+                            <thead class="bg-slate-950 text-slate-400 uppercase text-xs">
+                                <tr>
+                                    <th class="p-3">Username</th>
+                                    <th class="p-3">Email Utama</th>
+                                    <th class="p-3">Saldo</th>
+                                    <th class="p-3">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-member-list" class="divide-y divide-slate-800"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Admin Tab: Pengaturan & Rules -->
+                <div id="a-content-settings" class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-6 hidden">
+                    <h3 class="text-lg font-bold text-white">Pengaturan Rate & Aturan</h3>
+                    <form onsubmit="handleSaveSettings(event)" class="space-y-4 max-w-xl">
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-1">Rate Harga Per Email (Rp)</label>
+                            <input type="number" id="setting-rate" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-400 mb-1">Aturan & Ketentuan (Support HTML)</label>
+                            <textarea id="setting-rules" rows="5" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500"></textarea>
+                        </div>
+                        <button type="submit" class="bg-red-600 hover:bg-red-500 text-white font-bold px-6 py-3 rounded-lg transition">Simpan Pengaturan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-6 text-center text-slate-500 text-sm">
+        <p>&copy; 2026 Gmailws99. All rights reserved. | <a href="#" onclick="navigate('frofit')" class="text-red-400 hover:underline font-bold">frofit</a></p>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        let db = JSON.parse(localStorage.getItem('gmailws99_db')) || {
+            users: [],
+            submissions: [],
+            withdrawals: [],
+            settings: { rate: 500, rules: "1. Dilarang mengirim email spam.<br>2. Pastikan email aktif.<br>3. Minimal WD adalah Rp 50.000." }
+        };
+
+        function saveDB() {
+            localStorage.setItem('gmailws99_db', JSON.stringify(db));
+        }
+
+        let currentUser = JSON.parse(localStorage.getItem('gmailws99_current_user')) || null;
+        let adminSession = localStorage.getItem('gmailws99_admin_logged') === 'true';
+
+        window.onload = function() {
+            checkAuthSession();
+        };
+
+        function navigate(view) {
+            document.getElementById('view-landing').classList.add('hidden');
+            document.getElementById('view-auth').classList.add('hidden');
+            document.getElementById('view-member').classList.add('hidden');
+            document.getElementById('view-admin').classList.add('hidden');
+
+            if(view === 'home') {
+                checkAuthSession();
+            } else if(view === 'frofit') {
+                document.getElementById('view-admin').classList.remove('hidden');
+                checkAdminState();
+            }
+        }
+
+        function checkAuthSession() {
+            if (currentUser) {
+                document.getElementById('view-landing').classList.add('hidden');
+                document.getElementById('view-auth').classList.add('hidden');
+                document.getElementById('view-member').classList.remove('hidden');
+                document.getElementById('view-admin').classList.add('hidden');
+                
+                document.getElementById('nav-auth').innerHTML = `
+                    <span class="text-slate-300 text-sm hidden sm:inline">Hi, <b>${currentUser.username}</b></span>
+                    <button onclick="handleLogout()" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-4 py-2 rounded-lg text-sm font-bold transition">Keluar</button>
+                `;
+                loadMemberDashboard();
+            } else {
+                document.getElementById('view-landing').classList.remove('hidden');
+                document.getElementById('nav-auth').innerHTML = `
+                    <button onclick="switchAuthTab('login')" class="text-slate-300 hover:text-white px-3 py-2 text-sm font-bold">Masuk</button>
+                    <button onclick="switchAuthTab('register')" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition">Daftar</button>
+                `;
+            }
+        }
+
+        function switchAuthTab(tab) {
+            document.getElementById('view-landing').classList.add('hidden');
+            document.getElementById('view-auth').classList.remove('hidden');
+            if(tab === 'login') {
+                document.getElementById('form-login').classList.remove('hidden');
+                document.getElementById('form-register').classList.add('hidden');
+                document.getElementById('tab-login').className = "flex-1 pb-3 text-center font-bold text-blue-500 border-b-2 border-blue-500 transition";
+                document.getElementById('tab-register').className = "flex-1 pb-3 text-center font-bold text-slate-400 border-b-2 border-transparent transition";
+            } else {
+                document.getElementById('form-login').classList.add('hidden');
+                document.getElementById('form-register').classList.remove('hidden');
+                document.getElementById('tab-register').className = "flex-1 pb-3 text-center font-bold text-blue-500 border-b-2 border-blue-500 transition";
+                document.getElementById('tab-login').className = "flex-1 pb-3 text-center font-bold text-slate-400 border-b-2 border-transparent transition";
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const username = document.getElementById('reg-user').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-pass').value;
+
+            if(db.users.find(u => u.username === username)) {
+                Swal.fire('Gagal', 'Username sudah terdaftar!', 'error');
+                return;
+            }
+
+            db.users.push({ username, email, password, balance: 0 });
+            saveDB();
+            Swal.fire('Berhasil', 'Akun berhasil didaftarkan, silakan masuk!', 'success');
+            switchAuthTab('login');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('login-user').value.trim();
+            const password = document.getElementById('login-pass').value;
+
+            const user = db.users.find(u => (u.username === username || u.email === username) && u.password === password);
+            if(user) {
+                currentUser = user;
+                localStorage.setItem('gmailws99_current_user', JSON.stringify(currentUser));
+                checkAuthSession();
+                Swal.fire('Berhasil', `Selamat datang kembali, ${user.username}!`, 'success');
+            } else {
+                Swal.fire('Gagal', 'Username atau password salah!', 'error');
+            }
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('gmailws99_current_user');
+            navigate('home');
+            Swal.fire('Keluar', 'Anda telah keluar dari akun.', 'info');
+        }
+
+        function switchMemberTab(tab) {
+            const tabs = ['store', 'history', 'withdraw', 'rules', 'profile'];
+            tabs.forEach(t => {
+                document.getElementById(`m-content-${t}`).classList.add('hidden');
+                document.getElementById(`m-tab-${t}`).className = "px-5 py-2.5 rounded-xl font-bold bg-slate-900 text-slate-400 hover:bg-slate-800 transition";
+            });
+            document.getElementById(`m-content-${tab}`).classList.remove('hidden');
+            document.getElementById(`m-tab-${tab}`).className = "px-5 py-2.5 rounded-xl font-bold bg-blue-600 text-white transition";
+        }
+
+        function loadMemberDashboard() {
+            let freshUser = db.users.find(u => u.username === currentUser?.username);
+            if(freshUser) {
+                currentUser = freshUser;
+                localStorage.setItem('gmailws99_current_user', JSON.stringify(currentUser));
+            }
+
+            if(!currentUser) return;
+
+            document.getElementById('member-name').innerText = currentUser.username;
+            document.getElementById('member-balance').innerText = `Rp ${currentUser.balance.toLocaleString('id-ID')}`;
+            document.getElementById('member-rate').innerText = `Rp ${db.settings.rate.toLocaleString('id-ID')}`;
+            document.getElementById('prof-username').innerText = currentUser.username;
+            document.getElementById('prof-email').innerText = currentUser.email;
+            document.getElementById('display-rules').innerHTML = db.settings.rules;
+
+            let historyHTML = '';
+            let userSubs = db.submissions.filter(s => s.username === currentUser.username);
+            let userWds = db.withdrawals.filter(w => w.username === currentUser.username);
+
+            let combined = [
+                ...userSubs.map(s => ({ date: s.date, type: 'Stor Email', desc: s.email + (s.notes ? ` (${s.notes})` : ''), status: s.status })),
+                ...userWds.map(w => ({ date: w.date, type: 'Tarik Saldo', desc: `Rp ${w.amount.toLocaleString('id-ID')} via ${w.method}`, status: w.status }))
+            ].sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            if(combined.length === 0) {
+                historyHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">Belum ada riwayat transaksi.</td></tr>`;
+            } else {
+                combined.forEach(item => {
+                    let badgeColor = 'bg-amber-500/20 text-amber-400';
+                    if(item.status === 'Diterima' || item.status === 'Selesai') badgeColor = 'bg-emerald-500/20 text-emerald-400';
+                    if(item.status === 'Ditolak') badgeColor = 'bg-red-500/20 text-red-400';
+
+                    historyHTML += `
+                        <tr>
+                            <td class="p-3 text-slate-400 text-xs">${item.date}</td>
+                            <td class="p-3 font-semibold">${item.type}</td>
+                            <td class="p-3">${item.desc}</td>
+                            <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${badgeColor}">${item.status}</span></td>
+                        </tr>
+                    `;
+                });
+            }
+            document.getElementById('member-history-list').innerHTML = historyHTML;
+        }
+
+        function handleStoreEmail(e) {
+            e.preventDefault();
+            const email = document.getElementById('store-email').value;
+            const notes = document.getElementById('store-notes').value;
+
+            db.submissions.push({
+                id: Date.now(),
+                username: currentUser.username,
+                email: email,
+                notes: notes,
+                status: 'Pending',
+                date: new Date().toISOString().slice(0, 19).replace('T', ' ')
+            });
+            saveDB();
+            document.getElementById('store-email').value = '';
+            document.getElementById('store-notes').value = '';
+            loadMemberDashboard();
+            Swal.fire('Berhasil', 'Email berhasil disetor, menunggu verifikasi Admin.', 'success');
+        }
+
+        function handleWithdraw(e) {
+            e.preventDefault();
+            const amount = parseInt(document.getElementById('wd-amount').value);
+            const method = document.getElementById('wd-method').value;
+
+            if(amount < 50000) {
+                Swal.fire('Gagal', 'Minimal penarikan saldo adalah Rp 50.000!', 'warning');
+                return;
+            }
+            if(currentUser.balance < amount) {
+                Swal.fire('Gagal', 'Saldo Anda tidak mencukupi!', 'error');
+                return;
+            }
+
+            currentUser.balance -= amount;
+            let uIdx = db.users.findIndex(u => u.username === currentUser.username);
+            db.users[uIdx].balance = currentUser.balance;
+
+            db.withdrawals.push({
+                id: Date.now(),
+                username: currentUser.username,
+                amount: amount,
+                method: method,
+                status: 'Pending',
+                date: new Date().toISOString().slice(0, 19).replace('T', ' ')
+            });
+            saveDB();
+            document.getElementById('wd-amount').value = '';
+            document.getElementById('wd-method').value = '';
+            loadMemberDashboard();
+            Swal.fire('Berhasil', 'Permintaan penarikan saldo telah dikirim ke Admin.', 'success');
+        }
+
+        // --- ADMIN / FROFIT LOGIC ---
+        function checkAdminState() {
+            if(adminSession) {
+                document.getElementById('admin-login-box').classList.add('hidden');
+                document.getElementById('admin-panel-box').classList.remove('hidden');
+                loadAdminData();
+            } else {
+                document.getElementById('admin-login-box').classList.remove('hidden');
+                document.getElementById('admin-panel-box').classList.add('hidden');
+            }
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('admin-user-input').value;
+            const p = document.getElementById('admin-pass-input').value;
+
+            if(u === 'admin' && p === 'admin123') {
+                adminSession = true;
+                localStorage.setItem('gmailws99_admin_logged', 'true');
+                checkAdminState();
+                Swal.fire('Berhasil', 'Login Frofit Admin Sukses!', 'success');
+            } else {
+                Swal.fire('Gagal', 'Username atau Password Admin salah!', 'error');
+            }
+        }
+
+        function switchAdminTab(tab) {
+            const tabs = ['emails', 'wd', 'members', 'settings'];
+            tabs.forEach(t => {
+                document.getElementById(`a-content-${t}`).classList.add('hidden');
+                document.getElementById(`a-tab-${t}`).className = "px-5 py-2.5 rounded-xl font-bold bg-slate-900 text-slate-400 hover:bg-slate-800 transition";
+            });
+            document.getElementById(`a-content-${tab}`).classList.remove('hidden');
+            document.getElementById(`a-tab-${tab}`).className = "px-5 py-2.5 rounded-xl font-bold bg-red-600 text-white transition";
+        }
+
+        function loadAdminData() {
+            // Email Pending List
+            let emailHTML = '';
+            let pendingEmails = db.submissions.filter(s => s.status === 'Pending');
+            if(pendingEmails.length === 0) {
+                emailHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Tidak ada stor email pending.</td></tr>`;
+            } else {
+                pendingEmails.forEach(item => {
+                    emailHTML += `
+                        <tr>
+                            <td class="p-3 text-slate-400 text-xs">${item.date}</td>
+                            <td class="p-3 font-semibold">${item.username}</td>
+                            <td class="p-3 text-blue-400">${item.email}</td>
+                            <td class="p-3 text-slate-400">${item.notes || '-'}</td>
+                            <td class="p-3 space-x-2">
+                                <button onclick="actionEmail(${item.id}, 'Diterima')" class="bg-emerald-600 hover:bg-emerald-500 px-3 py-1.5 rounded text-xs font-bold text-white">ACC (+Saldo)</button>
+                                <button onclick="actionEmail(${item.id}, 'Ditolak')" class="bg-red-600 hover:bg-red-500 px-3 py-1.5 rounded text-xs font-bold text-white">Tolak</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            document.getElementById('admin-email-list').innerHTML = emailHTML;
+
+            // WD Pending List
+            let wdHTML = '';
+            let pendingWd = db.withdrawals.filter(w => w.status === 'Pending');
+            if(pendingWd.length === 0) {
+                wdHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Tidak ada permintaan WD pending.</td></tr>`;
+            } else {
+                pendingWd.forEach(item => {
+                    wdHTML += `
+                        <tr>
+                            <td class="p-3 text-slate-400 text-xs">${item.date}</td>
+                            <td class="p-3 font-semibold">${item.username}</td>
+                            <td class="p-3 text-emerald-400 font-bold">Rp ${item.amount.toLocaleString('id-ID')}</td>
+                            <td class="p-3">${item.method}</td>
+                            <td class="p-3 space-x-2">
+                                <button onclick="actionWd(${item.id}, 'Selesai')" class="bg-emerald-600 hover:bg-emerald-500 px-3 py-1.5 rounded text-xs font-bold text-white">Selesaikan</button>
+                                <button onclick="actionWd(${item.id}, 'Ditolak')" class="bg-red-600 hover:bg-red-500 px-3 py-1.5 rounded text-xs font-bold text-white">Tolak (Refund)</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            document.getElementById('admin-wd-list').innerHTML = wdHTML;
+
+            // Members List
+            let memberHTML = '';
+            if(db.users.length === 0) {
+                memberHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">Belum ada member terdaftar.</td></tr>`;
+            } else {
+                db.users.forEach((u, idx) => {
+                    memberHTML += `
+                        <tr>
+                            <td class="p-3 font-semibold">${u.username}</td>
+                            <td class="p-3 text-slate-400">${u.email}</td>
+                            <td class="p-3 text-emerald-400 font-bold">Rp ${u.balance.toLocaleString('id-ID')}</td>
+                            <td class="p-3">
+                                <button onclick="deleteMember(${idx})" class="bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Hapus</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            document.getElementById('admin-member-list').innerHTML = memberHTML;
+
+            // Settings values
+            document.getElementById('setting-rate').value = db.settings.rate;
+            document.getElementById('setting-rules').value = db.settings.rules.replace(/<br>/g, '\n');
+        }
+
+        function actionEmail(id, status) {
+            let sub = db.submissions.find(s => s.id === id);
+            if(sub) {
+                sub.status = status;
+                if(status === 'Diterima') {
+                    let user = db.users.find(u => u.username === sub.username);
+                    if(user) {
+                        user.balance += db.settings.rate;
+                    }
+                }
+                saveDB();
+                loadAdminData();
+                Swal.fire('Berhasil', `Email status diubah ke ${status}`, 'success');
+            }
+        }
+
+        function actionWd(id, status) {
+            let wd = db.withdrawals.find(w => w.id === id);
+            if(wd) {
+                wd.status = status;
+                if(status === 'Ditolak') {
+                    let user = db.users.find(u => u.username === wd.username);
+                    if(user) {
+                        user.balance += wd.amount;
+                    }
+                }
+                saveDB();
+                loadAdminData();
+                Swal.fire('Berhasil', `WD status diubah ke ${status}`, 'success');
+            }
+        }
+
+        function deleteMember(idx) {
+            Swal.fire({
+                title: 'Hapus Member?',
+                text: "Tindakan ini permanen!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Ya, Hapus!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    db.users.splice(idx, 1);
+                    saveDB();
+                    loadAdminData();
+                    Swal.fire('Terhapus!', 'Member dihapus.', 'success');
+                }
+            });
+        }
+
+        function handleSaveSettings(e) {
+            e.preventDefault();
+            const rate = parseInt(document.getElementById('setting-rate').value);
+            const rawRules = document.getElementById('setting-rules').value;
+            db.settings.rate = rate;
+            db.settings.rules = rawRules.replace(/\n/g, '<br>');
+            saveDB();
+            Swal.fire('Berhasil', 'Pengaturan diperbarui!', 'success');
+        }
+    </script>
+</body>
+</html>
