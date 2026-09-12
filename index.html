@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frofit - Admin Panel Gmailws99</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- NAVBAR ADMIN -->
+    <nav class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-red-600 p-2 rounded-lg text-white font-bold text-xl"><i class="fa-solid fa-user-shield"></i></div>
+                    <span class="text-xl font-extrabold tracking-wider bg-gradient-to-r from-red-400 to-amber-500 bg-clip-text text-transparent">Frofit Admin</span>
+                </div>
+                <div id="admin-nav-right"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTAINER ADMIN -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow">
+        
+        <!-- LOGIN ADMIN -->
+        <div id="admin-login-view" class="max-w-md mx-auto bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl mt-12">
+            <h2 class="text-2xl font-bold text-white mb-6 text-center"><i class="fa-solid fa-lock text-red-500 mr-2"></i>Login Frofit Admin</h2>
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">Username Admin</label>
+                    <input type="text" id="admin-user" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500" placeholder="Masukkan username admin">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">Password</label>
+                    <input type="password" id="admin-pass" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500" placeholder="Masukkan password admin">
+                </div>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded-lg transition">Masuk Frofit</button>
+            </form>
+            <div class="mt-4 text-center">
+                <a href="index.html" class="text-xs text-slate-400 hover:text-white"><i class="fa-solid fa-arrow-left mr-1"></i>Kembali ke Beranda Utama</a>
+            </div>
+        </div>
+
+        <!-- DASHBOARD ADMIN -->
+        <div id="admin-dashboard-view" class="hidden space-y-8">
+            <div class="flex flex-wrap gap-3 border-b border-slate-800 pb-4">
+                <button onclick="switchAdminTab('emails')" id="a-tab-emails" class="px-5 py-2.5 rounded-xl font-bold bg-red-600 text-white transition">ACC Email</button>
+                <button onclick="switchAdminTab('wd')" id="a-tab-wd" class="px-5 py-2.5 rounded-xl font-bold bg-slate-900 text-slate-400 hover:bg-slate-800 transition">Proses WD</button>
+                <button onclick="switchAdminTab('members')" id="a-tab-members" class="px-5 py-2.5 rounded-xl font-bold bg-slate-900 text-slate-400 hover:bg-slate-800 transition">Daftar Member</button>
+                <button onclick="switchAdminTab('settings')" id="a-tab-settings" class="px-5 py-2.5 rounded-xl font-bold bg-slate-900 text-slate-400 hover:bg-slate-800 transition">Pengaturan & Rules</button>
+            </div>
+
+            <!-- Tab 1: ACC Email -->
+            <div id="a-content-emails" class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
+                <h3 class="text-lg font-bold text-white">Daftar Stor Email Pending</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-slate-950 text-slate-400 uppercase text-xs">
+                            <tr>
+                                <th class="p-3">Tanggal</th>
+                                <th class="p-3">Member</th>
+                                <th class="p-3">Email Disetor</th>
+                                <th class="p-3">Catatan</th>
+                                <th class="p-3">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-email-list" class="divide-y divide-slate-800"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab 2: Proses WD -->
+            <div id="a-content-wd" class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 hidden">
+                <h3 class="text-lg font-bold text-white">Permintaan Penarikan Saldo (WD)</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-slate-950 text-slate-400 uppercase text-xs">
+                            <tr>
+                                <th class="p-3">Tanggal</th>
+                                <th class="p-3">Member</th>
+                                <th class="p-3">Jumlah</th>
+                                <th class="p-3">Metode / Tujuan</th>
+                                <th class="p-3">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-wd-list" class="divide-y divide-slate-800"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab 3: Daftar Member -->
+            <div id="a-content-members" class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 hidden">
+                <h3 class="text-lg font-bold text-white">Manajemen Member</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-slate-950 text-slate-400 uppercase text-xs">
+                            <tr>
+                                <th class="p-3">Username</th>
+                                <th class="p-3">Email</th>
+                                <th class="p-3">Saldo</th>
+                                <th class="p-3">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-member-list" class="divide-y divide-slate-800"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab 4: Pengaturan Rate & Rules -->
+            <div id="a-content-settings" class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-6 hidden">
+                <h3 class="text-lg font-bold text-white">Pengaturan Rate & Rules Platform</h3>
+                <form onsubmit="handleSaveSettings(event)" class="space-y-4 max-w-xl">
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-1">Rate Harga Per Email (Rp)</label>
+                        <input type="number" id="setting-rate" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-1">Aturan & Ketentuan (HTML Support)</label>
+                        <textarea id="setting-rules" rows="5" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500"></textarea>
+                    </div>
+                    <button type="submit" class="bg-red-600 hover:bg-red-500 text-white font-bold px-6 py-3 rounded-lg transition">Simpan Pengaturan</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER ADMIN -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-6 text-center text-slate-500 text-sm">
+        <p>&copy; 2026 Frofit Admin Panel. | <a href="index.html" class="text-blue-400 hover:underline">Ke Halaman Utama</a></p>
+    </footer>
+
+    <!-- JAVASCRIPT ADMIN -->
+    <script>
+        let db = JSON.parse(localStorage.getItem('gmailws99_db')) || {
+            users: [],
+            submissions: [],
+            withdrawals: [],
+            settings: { rate: 500, rules: "1. Dilarang mengirim email spam.<br>2. Pastikan email aktif.<br>3. Minimal WD adalah Rp 50.000." }
+        };
+
+        function saveDB() {
+            localStorage.setItem('gmailws99_db', JSON.stringify(db));
+        }
+
+        let adminLoggedIn = localStorage.getItem('gmailws99_admin_session') === 'true';
+
+        window.onload = function() {
+            checkAdminSession();
+        };
+
+        function checkAdminSession() {
+            if (adminLoggedIn) {
+                document.getElementById('admin-login-view').classList.add('hidden');
+                document.getElementById('admin-dashboard-view').classList.remove('hidden');
+                document.getElementById('admin-nav-right').innerHTML = `
+                    <button onclick="handleAdminLogout()" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-4 py-2 rounded-lg text-sm font-bold transition">Keluar Frofit</button>
+                `;
+                loadAdminData();
+            } else {
+                document.getElementById('admin-login-view').classList.remove('hidden');
+                document.getElementById('admin-dashboard-view').classList.add('hidden');
+                document.getElementById('admin-nav-right').innerHTML = `<a href="index.html" class="text-sm text-slate-400 hover:text-white">Beranda</a>`;
+            }
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('admin-user').value;
+            const p = document.getElementById('admin-pass').value;
+
+            // Kredensial default admin
+            if(u === 'admin' && p === 'admin123') {
+                adminLoggedIn = true;
+                localStorage.setItem('gmailws99_admin_session', 'true');
+                checkAdminSession();
+                Swal.fire('Berhasil', 'Login Frofit Admin Sukses!', 'success');
+            } else {
+                Swal.fire('Gagal', 'Username atau Password Admin salah!', 'error');
+            }
+        }
+
+        function handleAdminLogout() {
+            adminLoggedIn = false;
+            localStorage.removeItem('gmailws99_admin_session');
+            checkAdminSession();
+            Swal.fire('Info', 'Admin berhasil keluar dari Frofit.', 'info');
+        }
+
+        function switchAdminTab(tab) {
+            const tabs = ['emails', 'wd', 'members', 'settings'];
+            tabs.forEach(t => {
+                document.getElementById(`a-content-${t}`).classList.add('hidden');
+                document.getElementById(`a-tab-${t}`).className = "px-5 py-2.5 rounded-xl font-bold bg-slate-900 text-slate-400 hover:bg-slate-800 transition";
+            });
+            document.getElementById(`a-content-${tab}`).classList.remove('hidden');
+            document.getElementById(`a-tab-${tab}`).className = "px-5 py-2.5 rounded-xl font-bold bg-red-600 text-white transition";
+        }
+
+        function loadAdminData() {
+            // 1. Email List
+            let emailHTML = '';
+            let pendingEmails = db.submissions.filter(s => s.status === 'Pending');
+            if(pendingEmails.length === 0) {
+                emailHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Tidak ada stor email pending.</td></tr>`;
+            } else {
+                pendingEmails.forEach(item => {
+                    emailHTML += `
+                        <tr>
+                            <td class="p-3 text-slate-400 text-xs">${item.date}</td>
+                            <td class="p-3 font-semibold">${item.username}</td>
+                            <td class="p-3 text-blue-400">${item.email}</td>
+                            <td class="p-3 text-slate-400">${item.notes || '-'}</td>
+                            <td class="p-3 space-x-2">
+                                <button onclick="actionEmail(${item.id}, 'Diterima')" class="bg-emerald-600 hover:bg-emerald-500 px-3 py-1.5 rounded text-xs font-bold text-white">ACC (+Saldo)</button>
+                                <button onclick="actionEmail(${item.id}, 'Ditolak')" class="bg-red-600 hover:bg-red-500 px-3 py-1.5 rounded text-xs font-bold text-white">Tolak</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            document.getElementById('admin-email-list').innerHTML = emailHTML;
+
+            // 2. WD List
+            let wdHTML = '';
+            let pendingWd = db.withdrawals.filter(w => w.status === 'Pending');
+            if(pendingWd.length === 0) {
+                wdHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Tidak ada permintaan WD pending.</td></tr>`;
+            } else {
+                pendingWd.forEach(item => {
+                    wdHTML += `
+                        <tr>
+                            <td class="p-3 text-slate-400 text-xs">${item.date}</td>
+                            <td class="p-3 font-semibold">${item.username}</td>
+                            <td class="p-3 text-emerald-400 font-bold">Rp ${item.amount.toLocaleString('id-ID')}</td>
+                            <td class="p-3">${item.method}</td>
+                            <td class="p-3 space-x-2">
+                                <button onclick="actionWd(${item.id}, 'Selesai')" class="bg-emerald-600 hover:bg-emerald-500 px-3 py-1.5 rounded text-xs font-bold text-white">Selesaikan</button>
+                                <button onclick="actionWd(${item.id}, 'Ditolak')" class="bg-red-600 hover:bg-red-500 px-3 py-1.5 rounded text-xs font-bold text-white">Tolak (Refund)</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            document.getElementById('admin-wd-list').innerHTML = wdHTML;
+
+            // 3. Member List
+            let memberHTML = '';
+            if(db.users.length === 0) {
+                memberHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">Belum ada member terdaftar.</td></tr>`;
+            } else {
+                db.users.forEach((u, idx) => {
+                    memberHTML += `
+                        <tr>
+                            <td class="p-3 font-semibold">${u.username}</td>
+                            <td class="p-3 text-slate-400">${u.email}</td>
+                            <td class="p-3 text-emerald-400 font-bold">Rp ${u.balance.toLocaleString('id-ID')}</td>
+                            <td class="p-3">
+                                <button onclick="deleteMember(${idx})" class="bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">Hapus</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            document.getElementById('admin-member-list').innerHTML = memberHTML;
+
+            // 4. Settings Form Values
+            document.getElementById('setting-rate').value = db.settings.rate;
+            document.getElementById('setting-rules').value = db.settings.rules.replace(/<br>/g, '\n');
+        }
+
+        function actionEmail(id, status) {
+            let sub = db.submissions.find(s => s.id === id);
+            if(sub) {
+                sub.status = status;
+                if(status === 'Diterima') {
+                    let user = db.users.find(u => u.username === sub.username);
+                    if(user) {
+                        user.balance += db.settings.rate;
+                    }
+                }
+                saveDB();
+                loadAdminData();
+                Swal.fire('Berhasil', `Email berhasil diubah status menjadi ${status}`, 'success');
+            }
+        }
+
+        function actionWd(id, status) {
+            let wd = db.withdrawals.find(w => w.id === id);
+            if(wd) {
+                wd.status = status;
+                if(status === 'Ditolak') {
+                    let user = db.users.find(u => u.username === wd.username);
+                    if(user) {
+                        user.balance += wd.amount;
+                    }
+                }
+                saveDB();
+                loadAdminData();
+                Swal.fire('Berhasil', `Penarikan saldo telah di-${status}`, 'success');
+            }
+        }
+
+        function deleteMember(idx) {
+            Swal.fire({
+                title: 'Hapus Member?',
+                text: "Tindakan ini tidak dapat dibatalkan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    db.users.splice(idx, 1);
+                    saveDB();
+                    loadAdminData();
+                    Swal.fire('Terhapus!', 'Member berhasil dihapus.', 'success');
+                }
+            });
+        }
+
+        function handleSaveSettings(e) {
+            e.preventDefault();
+            const rate = parseInt(document.getElementById('setting-rate').value);
+            const rawRules = document.getElementById('setting-rules').value;
+            const rules = rawRules.replace(/\n/g, '<br>');
+
+            db.settings.rate = rate;
+            db.settings.rules = rules;
+            saveDB();
+            Swal.fire('Berhasil', 'Pengaturan berhasil diperbarui!', 'success');
+        }
+    </script>
+</body>
+</html>
